@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useAccount } from 'wagmi';
 
 const mockPositions = [
@@ -17,14 +18,30 @@ healthFactor: null,
 },
 ];
 
+type AgentResult = {
+action: string;
+urgency: string;
+reason: string;
+suggestion: string;
+};
+
 function HealthBadge({ value }: { value: number | null }) {
 if (!value) return null;
 const color = value > 2 ? 'text-green-400' : value > 1.5 ? 'text-yellow-400' : 'text-red-400';
 return <span className={`text-xs font-mono ${color}`}>HF {value.toFixed(1)} ✓</span>;
 }
 
+function urgencyColor(urgency: string) {
+if (urgency === 'high') return 'text-red-400';
+if (urgency === 'medium') return 'text-yellow-400';
+return 'text-green-400';
+}
+
 export function Dashboard() {
 const { isConnected } = useAccount();
+const [agentResult, setAgentResult] = useState<AgentResult | null>(null);
+const [loading, setLoading] = useState(false);
+const [agentActive, setAgentActive] = useState(false);
 
 if (!isConnected) {
 return (
@@ -36,6 +53,35 @@ return (
 
 const totalEarning = 58.2;
 const netApy = 7.4;
+
+async function activateAgent() {
+setLoading(true);
+setAgentActive(true);
+try {
+const res = await fetch('/api/agent', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+healthFactor: 2.4,
+supplyApy: 8.2,
+borrowApy: 4.5,
+totalSupply: 700,
+totalDebt: 180,
+}),
+});
+const data = await res.json();
+setAgentResult(data);
+} catch {
+setAgentResult({
+action: 'HOLD',
+urgency: 'low',
+reason: 'Unable to fetch analysis',
+suggestion: 'Try again later',
+});
+} finally {
+setLoading(false);
+}
+}
 
 return (
 <div className="px-6 py-8 space-y-6">
@@ -78,11 +124,34 @@ Borrowed: <span className="text-white">{pos.borrowed.amount} {pos.borrowed.asset
 ))}
 </div>
 
-{/* AI Suggestion */}
-<div className="bg-indigo-950 border border-indigo-800 rounded-xl p-5">
-<p className="text-xs text-indigo-400 font-medium mb-1">⚡ AI Suggestion</p>
-<p className="text-sm text-gray-300">Move 200 USDT from Lendle to Aave V3 — earn <span className="text-green-400 font-semibold">+$12/month</span> extra at current rates.</p>
+{/* Activate Agent */}
+{!agentActive ? (
+<button
+onClick={activateAgent}
+className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold py-3 rounded-xl transition-colors"
+>
+⚡ Activate AI Agent
+</button>
+) : loading ? (
+<div className="bg-gray-900 border border-indigo-800 rounded-xl p-5 text-center">
+<p className="text-indigo-400 text-sm animate-pulse">🤖 Agent analyzing your positions...</p>
 </div>
+) : agentResult ? (
+<div className="bg-indigo-950 border border-indigo-800 rounded-xl p-5 space-y-3">
+<div className="flex items-center justify-between">
+<p className="text-xs text-indigo-400 font-medium">⚡ AI Agent Decision</p>
+<span className={`text-xs font-mono font-bold ${urgencyColor(agentResult.urgency || 'low')}`}>
+{agentResult.action} · {(agentResult.urgency || 'low').toUpperCase()}
+</span>
+</div>
+<p className="text-sm text-gray-300">{agentResult.reason}</p>
+<div className="bg-gray-900 rounded-lg p-3">
+<p className="text-xs text-gray-400 mb-1">Suggested Action</p>
+<p className="text-sm text-white">{agentResult.suggestion}</p>
+</div>
+<p className="text-xs text-gray-600">Session key active · Agent monitoring 24/7 via AA</p>
+</div>
+) : null}
 </div>
 );
 }
