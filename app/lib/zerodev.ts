@@ -47,17 +47,15 @@ kernelVersion: KERNEL_V3_1,
 const paymasterClient = createZeroDevPaymasterClient({
 chain: mantleSepolia,
 transport: http(PAYMASTER_RPC),
-entryPoint,
 });
 
 const kernelClient = createKernelAccountClient({
 account,
 chain: mantleSepolia,
 bundlerTransport: http(BUNDLER_RPC),
-middleware: {
-sponsorUserOperation: paymasterClient.sponsorUserOperation,
-},
+paymaster: paymasterClient,
 });
+
 
 return { account, kernelClient };
 }
