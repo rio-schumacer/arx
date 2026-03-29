@@ -1,5 +1,5 @@
 import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk";
-import { signerToEcdsaValidator } from "@zerodev/sdk/signers";
+import { signerToEcdsaValidator } from "@zerodev/sdk";
 import { http, createPublicClient } from "viem";
 import { defineChain } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
