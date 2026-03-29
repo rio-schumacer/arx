@@ -1,5 +1,6 @@
 import { createKernelAccount, createKernelAccountClient, createZeroDevPaymasterClient } from "@zerodev/sdk";
-import { signerToEcdsaValidator } from "@zerodev/sdk";
+import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
+import { KERNEL_V3_1, getEntryPoint } from "@zerodev/sdk/constants";
 import { http, createPublicClient } from "viem";
 import { defineChain } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
@@ -27,22 +28,26 @@ transport: http("https://rpc.sepolia.mantle.xyz"),
 });
 
 export async function createSmartAccount(signer: ReturnType<typeof privateKeyToAccount>) {
+const entryPoint = getEntryPoint("0.7");
+
 const ecdsaValidator = await signerToEcdsaValidator(publicClient, {
 signer,
-entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+entryPoint,
+kernelVersion: KERNEL_V3_1,
 });
 
 const account = await createKernelAccount(publicClient, {
 plugins: {
 sudo: ecdsaValidator,
 },
-entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+entryPoint,
+kernelVersion: KERNEL_V3_1,
 });
 
 const paymasterClient = createZeroDevPaymasterClient({
 chain: mantleSepolia,
 transport: http(PAYMASTER_RPC),
-entryPoint: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+entryPoint,
 });
 
 const kernelClient = createKernelAccountClient({
