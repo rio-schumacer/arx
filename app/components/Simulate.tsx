@@ -32,7 +32,7 @@ const monthly = daily * 30;
 const yearly = current ? (parsed * current.supplyApy) / 100 : 0;
 
 return (
-<div className="px-6 py-8 space-y-6">
+<div style={{ background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '16px', padding: '24px' }} className="space-y-6">
 <div className="flex items-center justify-between">
 <h2 className="text-sm text-gray-400 font-medium">Simulate Yield</h2>
 {!loading && <span className="text-xs text-green-400">● Live rates · Mantle</span>}

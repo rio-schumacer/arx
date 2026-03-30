@@ -29,7 +29,7 @@ const res = await fetch("/api/watch-wallet", { method: "POST" });
 const data = await res.json();
 setPositions(data);
 } catch {
-// silent fail
+// silent
 }
 }
 fetchWhales();
@@ -39,20 +39,20 @@ return () => clearInterval(interval);
 
 if (positions.length === 0) return null;
 
-const items = [...positions, ...positions]; // duplicate for seamless loop
+const items = [...positions, ...positions];
 
 return (
-<div className="w-full overflow-hidden bg-gray-950 border-y border-gray-800 py-2">
-<div className="flex animate-marquee whitespace-nowrap gap-12">
+<div className="overflow-hidden py-1.5 bg-gray-950/80">
+<div className="flex animate-marquee whitespace-nowrap gap-8">
 {items.map((pos, i) => (
-<span key={i} className="text-xs font-mono text-gray-400 flex items-center gap-2">
-<span className="text-gray-600">◆</span>
-<span className="text-gray-300">{truncateAddress(pos.address)}</span>
-<span>·</span>
-<span className="text-white">${(pos.totalCollateralUsd / 1000).toFixed(1)}K supplied</span>
-<span>·</span>
-<span className="text-orange-400">${(pos.totalDebtUsd / 1000).toFixed(1)}K borrowed</span>
-<span>·</span>
+<span key={i} className="inline-flex items-center gap-1.5 text-[11px] font-mono text-gray-500">
+<span className="text-indigo-700">◆</span>
+<span className="text-gray-400">{truncateAddress(pos.address)}</span>
+<span className="text-gray-700">·</span>
+<span className="text-gray-300">${(pos.totalCollateralUsd / 1000).toFixed(1)}K</span>
+<span className="text-gray-700">/</span>
+<span className="text-orange-400/80">${(pos.totalDebtUsd / 1000).toFixed(1)}K debt</span>
+<span className="text-gray-700">·</span>
 <span className={hfColor(pos.healthFactor)}>HF {pos.healthFactor.toFixed(2)}</span>
 </span>
 ))}

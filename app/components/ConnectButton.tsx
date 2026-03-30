@@ -10,13 +10,12 @@ const { disconnect } = useDisconnect();
 const { connect } = useConnect();
 const [mounted, setMounted] = useState(false);
 
-useEffect(() => {
-setMounted(true);
-}, []);
+useEffect(() => { setMounted(true); }, []);
 
 if (!mounted) {
 return (
-<button className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg">
+<button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors">
+<span className="w-2 h-2 rounded-full bg-white/40"></span>
 Connect Wallet
 </button>
 );
@@ -26,8 +25,9 @@ if (isConnected && address) {
 return (
 <button
 onClick={() => disconnect()}
-className="bg-gray-800 hover:bg-gray-700 text-white text-sm px-4 py-2 rounded-lg border border-gray-700"
+className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-xs font-mono px-4 py-2 rounded-lg border border-gray-700 transition-colors"
 >
+<span className="w-2 h-2 rounded-full bg-green-400"></span>
 {address.slice(0, 6)}...{address.slice(-4)}
 </button>
 );
@@ -36,8 +36,9 @@ className="bg-gray-800 hover:bg-gray-700 text-white text-sm px-4 py-2 rounded-lg
 return (
 <button
 onClick={() => connect({ connector: injected() })}
-className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg"
+className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors"
 >
+<span className="w-2 h-2 rounded-full bg-white/40"></span>
 Connect Wallet
 </button>
 );
