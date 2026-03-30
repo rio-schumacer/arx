@@ -148,6 +148,11 @@ selected === i ? 'border-indigo-500 bg-indigo-950 text-white' : 'border-gray-800
 <span className="text-gray-400">Net Monthly</span>
 <span className={`font-mono font-bold ${netMonthly >= 0 ? 'text-green-400' : 'text-red-400'}`}>${netMonthly.toFixed(2)}</span>
 </div>
+{netMonthly < 0 && (
+<p className="text-xs text-yellow-500 mt-1">
+⚠️ Borrowing cost exceeds supply yield at current rates. Consider waiting for better APY conditions.
+</p>
+)}
 <div className="flex justify-between text-xs">
 <span className="text-gray-500">Est. Health Factor</span>
 <span className={`font-mono ${healthFactor > 2 ? 'text-green-400' : healthFactor > 1.5 ? 'text-yellow-400' : 'text-red-400'}`}>{healthFactor.toFixed(2)}</span>
