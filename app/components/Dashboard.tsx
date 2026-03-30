@@ -289,7 +289,7 @@ className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-base font-se
 <AgentLog result={agentResult} position={position} />
 ) : null}
 
-{agentResult && isConnected && !sessionKeyActive && (
+{agentResult && !sessionKeyActive && (
 <button
 onClick={() => setShowSessionModal(true)}
 className="w-full border border-indigo-700 hover:bg-indigo-950 text-indigo-300 text-base font-semibold py-3 rounded-xl transition-colors"

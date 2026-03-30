@@ -72,12 +72,12 @@ Monitor any wallet, get AI-powered risk analysis, and protect your position with
 </div>
 
 {/* Body */}
-<div style={{ margin: '0 auto', maxWidth: '1280px', width: '100%', paddingLeft: '32px', paddingRight: '32px', paddingTop: '40px', paddingBottom: '40px' }}>
-<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', minHeight: '600px' }}>
-<div style={{ borderRight: '1px solid #1f2937', paddingRight: '48px', paddingTop: '16px' }}>
+<div style={{ margin: '0 auto', maxWidth: '1280px', width: '100%', paddingLeft: '24px', paddingRight: '24px', paddingTop: '40px', paddingBottom: '40px' }}>
+<div className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
+<div style={{ paddingRight: '0', paddingTop: '16px', paddingBottom: '16px' }} className="lg:border-r lg:border-gray-800 lg:pr-12">
 <Dashboard />
 </div>
-<div style={{ paddingLeft: '48px', paddingTop: '16px' }}>
+<div style={{ paddingTop: '16px', paddingBottom: '16px' }} className="lg:pl-12 border-t border-gray-800 lg:border-t-0">
 <Simulate />
 </div>
 </div>
