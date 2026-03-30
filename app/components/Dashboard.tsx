@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 
 type AavePosition = {
@@ -29,6 +29,51 @@ function urgencyColor(urgency: string) {
 if (urgency === 'high') return 'text-red-400';
 if (urgency === 'medium') return 'text-yellow-400';
 return 'text-green-400';
+}
+
+function AgentLog({ result, position }: { result: AgentResult; position: AavePosition }) {
+const [lines, setLines] = useState<string[]>([]);
+
+const allLines = [
+`🔍 Scanning position... HF ${position.healthFactor.toFixed(2)} · $${(position.totalCollateralUsd/1000).toFixed(1)}K supplied`,
+`📊 Utilization: ${((position.totalDebtUsd/position.totalCollateralUsd)*100).toFixed(1)}% · Debt $${(position.totalDebtUsd/1000).toFixed(1)}K`,
+`🧠 Analyzing market conditions on Mantle...`,
+`⚡ Decision: ${result.action} — ${result.reason}`,
+`💡 ${result.suggestion}`,
+`⏳ Next scan in 60s · Session key active via AA`,
+];
+
+useEffect(() => {
+setLines([]);
+let i = 0;
+const interval = setInterval(() => {
+if (i < allLines.length) {
+setLines((prev) => [...prev, allLines[i]]);
+i++;
+} else {
+clearInterval(interval);
+}
+}, 800);
+return () => clearInterval(interval);
+}, [result]);
+
+const urgencyBorder = result.urgency === 'high' ? 'border-red-800' : result.urgency === 'medium' ? 'border-yellow-800' : 'border-indigo-900';
+const actionColor = result.action === 'REPAY' ? 'text-red-400' : result.action === 'SUPPLY' || result.action === 'OPTIMIZE' ? 'text-green-400' : 'text-indigo-400';
+
+return (
+<div className={`bg-gray-950 border ${urgencyBorder} rounded-xl p-4 font-mono text-xs space-y-1`}>
+<div className="flex items-center justify-between mb-2">
+<span className="text-gray-500">ARX Agent · Mantle</span>
+<span className={`font-bold ${actionColor}`}>{result.action} · {(result.urgency || 'low').toUpperCase()}</span>
+</div>
+{lines.map((line, i) => (
+<p key={i} className="text-gray-300 leading-relaxed">{line}</p>
+))}
+{lines.length < allLines.length && (
+<span className="text-indigo-400 animate-pulse">▋</span>
+)}
+</div>
+);
 }
 
 export function Dashboard() {
@@ -172,25 +217,13 @@ className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semi
 ⚡ Activate AI Agent
 </button>
 ) : agentLoading ? (
-<div className="bg-gray-900 border border-indigo-800 rounded-xl p-4 text-center">
-<p className="text-indigo-400 text-sm animate-pulse">🤖 Agent analyzing position...</p>
+<div className="bg-gray-950 border border-indigo-900 rounded-xl p-4 font-mono text-xs space-y-1">
+<p className="text-indigo-400 animate-pulse">🔍 Scanning position data...</p>
 </div>
 ) : agentResult ? (
-<div className="bg-indigo-950 border border-indigo-800 rounded-xl p-5 space-y-3">
-<div className="flex items-center justify-between">
-<p className="text-xs text-indigo-400 font-medium">⚡ AI Agent Decision</p>
-<span className={`text-xs font-mono font-bold ${urgencyColor(agentResult.urgency || 'low')}`}>
-{agentResult.action} · {(agentResult.urgency || 'low').toUpperCase()}
-</span>
-</div>
-<p className="text-sm text-gray-300">{agentResult.reason}</p>
-<div className="bg-gray-900 rounded-lg p-3">
-<p className="text-xs text-gray-400 mb-1">Suggested Action</p>
-<p className="text-sm text-white">{agentResult.suggestion}</p>
-</div>
-<p className="text-xs text-gray-600">Session key active · Agent monitoring 24/7 via AA</p>
-</div>
+<AgentLog result={agentResult} position={position} />
 ) : null}
+
 </div>
 )}
 
