@@ -88,13 +88,11 @@ User Wallet (MetaMask)
 ▼
 ARX Frontend (Next.js)
 │
-├── Watch Wallet → Aave V3 Pool (Mantle mai
-n
-net eth_call)
-├── AI Agent → Groq API (llama-3.1-8b-instant)
-├── Session Key → ZeroDev SDK (Mantle Sepolia)
-├── Gas Compare → Mantle RPC + Ethereum RPC
-└── MCP Server → /api/mcp (5 tools)
+├── Watch Wallet ──→ Aave V3 Pool (Mantle mainnet)
+├── AI Agent ──────→ Groq API (llama-3.1-8b-instant)
+├── Session Key ───→ ZeroDev SDK (Mantle Sepolia)
+├── Gas Compare ───→ Mantle RPC + Ethereum RPC
+└── MCP Server ────→ /api/mcp (5 tools)
 ---
 
 ## Tech Stack
