@@ -83,16 +83,13 @@ Scrolling feed of real Aave V3 whale positions on Mantle — auto-refreshes ever
 
 ## Architecture
 
-User Wallet (MetaMask)
-│
-▼
-ARX Frontend (Next.js)
-│
-├── Watch Wallet ──→ Aave V3 Pool (Mantle mainnet)
-├── AI Agent ──────→ Groq API (llama-3.1-8b-instant)
-├── Session Key ───→ ZeroDev SDK (Mantle Sepolia)
-├── Gas Compare ───→ Mantle RPC + Ethereum RPC
-└── MCP Server ────→ /api/mcp (5 tools)
+**Data flow:**
+- Watch Wallet → `eth_call` to Aave V3 Pool on Mantle mainnet
+- AI Agent → Groq API (`llama-3.1-8b-instant`) with position context
+- Session Key → ZeroDev SDK on Mantle Sepolia (Kernel v3.1)
+- Gas Compare → Mantle RPC + Ethereum public RPC (live)
+- MCP Server → `/api/mcp` — 5 tools for external AI agents
+
 ---
 
 ## Tech Stack
@@ -119,12 +116,15 @@ ARX Frontend (Next.js)
 git clone https://github.com/rio-schumacer/arx.git
 cd arx
 npm install --legacy-peer-deps
+
 Create .env.local:
 
+Bash
 NEXT_PUBLIC_ZERODEV_PROJECT_ID=your_project_id
 NEXT_PUBLIC_CHAIN_ID=5003
 GROQ_API_KEY=your_groq_api_key
 
+Bash
 npm run dev
 
 ───
