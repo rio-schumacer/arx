@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-async function getGasPrice(rpc: string): Promise<bigint> {
+async function getGasPrice(rpc: string): Promise<number> {
 const res = await fetch(rpc, {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
@@ -8,7 +8,7 @@ body: JSON.stringify({ jsonrpc: '2.0', method: 'eth_gasPrice', params: [], id: 1
 });
 const data = await res.json();
 if (!data.result) throw new Error(`No result from ${rpc}: ${JSON.stringify(data)}`);
-return BigInt(data.result);
+return Number(data.result);
 }
 
 export async function GET() {
@@ -22,10 +22,10 @@ getGasPrice('https://ethereum-rpc.publicnode.com'),
 // MNT price ~$0.80, ETH price ~$3000
 const MNT_PRICE = 0.80;
 const ETH_PRICE = 3000;
-const GAS_LIMIT = 21000n;
+const GAS_LIMIT = 21000;
 
-const mantleCostEth = Number(mantleGas * GAS_LIMIT) / 1e18;
-const ethCostEth = Number(ethGas * GAS_LIMIT) / 1e18;
+const mantleCostEth = (Number(mantleGas) * GAS_LIMIT) / 1e18;
+const ethCostEth = (Number(ethGas) * GAS_LIMIT) / 1e18;
 
 const mantleCostUsd = mantleCostEth * MNT_PRICE;
 const ethCostUsd = ethCostEth * ETH_PRICE;
