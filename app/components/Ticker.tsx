@@ -47,7 +47,14 @@ return (
 {items.map((pos, i) => (
 <span key={i} className="inline-flex items-center gap-1.5 text-[11px] font-mono text-gray-500">
 <span className="text-indigo-700">◆</span>
-<span className="text-gray-400">{truncateAddress(pos.address)}</span>
+<a
+href={`https://explorer.mantle.xyz/address/${pos.address}`}
+target="_blank"
+rel="noopener noreferrer"
+className="text-gray-400 hover:text-indigo-400 transition-colors"
+>
+{truncateAddress(pos.address)}
+</a>
 <span className="text-gray-700">·</span>
 <span className="text-gray-300">${(pos.totalCollateralUsd / 1000).toFixed(1)}K</span>
 <span className="text-gray-700">/</span>

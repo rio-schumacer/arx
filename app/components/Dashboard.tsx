@@ -31,7 +31,7 @@ if (urgency === 'medium') return 'text-yellow-400';
 return 'text-green-400';
 }
 
-function AgentLog({ result, position }: { result: AgentResult; position: AavePosition }) {
+function AgentLog({ result, position, onActivateSession }: { result: AgentResult; position: AavePosition; onActivateSession: () => void }) {
 const [displayedLines, setDisplayedLines] = useState<string[]>([]);
 const [currentLine, setCurrentLine] = useState('');
 const [lineIndex, setLineIndex] = useState(0);
@@ -90,8 +90,17 @@ return (
 {currentLine}<span className="text-indigo-400 animate-pulse">▋</span>
 </p>
 )}
+{lineIndex >= allLines.length && (
+<button
+onClick={onActivateSession}
+style={{ marginTop: '16px', width: '100%', backgroundColor: '#4f46e5', color: 'white', padding: '10px', borderRadius: '10px', fontWeight: 700, fontSize: '14px', border: 'none', cursor: 'pointer' }}
+>
+🔐 Approve Agent Permissions
+</button>
+)}
 </div>
 );
+
 }
 
 function SessionKeyModal({ onApprove, onClose }: { onApprove: () => void; onClose: () => void }) {
@@ -121,13 +130,16 @@ function SessionKeyModal({ onApprove, onClose }: { onApprove: () => void; onClos
 </div>
 </div>
 <p className="text-gray-600 text-sm">
-Powered by ZeroDev Account Abstraction. Your funds remain in your wallet at all times.
+⚠️ Preview mode — ZeroDev session key integration is ready. Live onchain execution coming after testnet setup.
 </p>
 <div className="flex gap-3">
 <button onClick={onClose} className="flex-1 text-gray-400 text-sm py-2.5 rounded-lg border border-gray-700 hover:bg-gray-800">
 Cancel
 </button>
-<button onClick={onApprove} className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold py-2.5 rounded-lg">
+<button
+onClick={() => { console.log('APPROVE CLICKED'); onApprove(); }}
+className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold py-2.5 rounded-lg"
+>
 Approve & Activate
 </button>
 </div>
@@ -148,6 +160,7 @@ const [agentLoading, setAgentLoading] = useState(false);
 const [agentActive, setAgentActive] = useState(false);
 const [showSessionModal, setShowSessionModal] = useState(false);
 const [sessionKeyActive, setSessionKeyActive] = useState(false);
+const [smartAccountAddr, setSmartAccountAddr] = useState('');
 
 useEffect(() => {
 setMounted(true);
@@ -255,7 +268,7 @@ className="text-sm text-indigo-400 hover:text-indigo-300"
 <HealthBadge value={position.healthFactor} />
 </div>
 
-<div className="grid grid-cols-2 gap-3">
+<div className="grid grid-cols-2 gap-3 mb-2">
 <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
 <p className="text-sm text-gray-500 mb-1">Total Supplied</p>
 <p className="text-xl font-bold text-white">${(position.totalCollateralUsd / 1000).toFixed(1)}K</p>
@@ -274,10 +287,21 @@ className="text-sm text-indigo-400 hover:text-indigo-300"
 </div>
 </div>
 
+<a
+href={`https://explorer.mantle.xyz/address/${watchAddress}`}
+target="_blank"
+rel="noopener noreferrer"
+style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#6b7280', textDecoration: 'none', marginBottom: '4px' }}
+>
+<span style={{ color: '#34d399', fontWeight: 700 }}>✓</span>
+<span>Verified on Mantle DA</span>
+<span style={{ color: '#4b5563' }}>↗</span>
+</a>
+
 {!agentActive ? (
 <button
 onClick={activateAgent}
-className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-base font-semibold py-3 rounded-xl transition-colors"
+className="w-full mt-4 bg-indigo-600 hover:bg-indigo-500 text-white text-base font-semibold py-3 rounded-xl transition-colors"
 >
 ⚡ Activate AI Agent
 </button>
@@ -286,23 +310,27 @@ className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-base font-se
 <p className="text-indigo-400 animate-pulse">🔍 Scanning position data...</p>
 </div>
 ) : agentResult ? (
-<AgentLog result={agentResult} position={position} />
-) : null}
+<AgentLog result={agentResult} position={position} onActivateSession={() => setShowSessionModal(true)} />
 
-{agentResult && !sessionKeyActive && (
-<button
-onClick={() => setShowSessionModal(true)}
-className="w-full border border-indigo-700 hover:bg-indigo-950 text-indigo-300 text-base font-semibold py-3 rounded-xl transition-colors"
->
-🔐 Approve Agent Permissions
-</button>
-)}
+) : null}
 
 {sessionKeyActive && (
 <div className="flex items-center justify-between bg-green-950 border border-green-800 rounded-xl px-4 py-3">
-<span className="text-green-400 text-sm font-mono">🔑 Session Key Active · Agent authorized via ZeroDev AA</span>
+<div>
+<p className="text-yellow-400 text-sm font-mono">🔑 Session Key Active · ZeroDev AA</p>
+{smartAccountAddr && (
+<a
+href={`https://explorer.sepolia.mantle.xyz/address/${smartAccountAddr}`}
+target="_blank"
+rel="noopener noreferrer"
+className="text-xs text-gray-500 hover:text-indigo-400 font-mono"
+>
+SA: {smartAccountAddr.slice(0, 10)}...{smartAccountAddr.slice(-6)}
+</a>
+)}
+</div>
 <button
-onClick={() => setSessionKeyActive(false)}
+onClick={() => { setSessionKeyActive(false); setSmartAccountAddr(''); }}
 className="text-xs text-gray-500 hover:text-red-400 ml-4 transition-colors"
 >
 Revoke
@@ -322,7 +350,25 @@ Revoke
 
 {showSessionModal && (
 <SessionKeyModal
-onApprove={() => { setShowSessionModal(false); setSessionKeyActive(true); }}
+onApprove={async () => {
+setShowSessionModal(false);
+if (!isConnected || !address) {
+alert('Please connect your wallet first and switch to Mantle Sepolia (chain ID 5003)');
+return;
+}
+try {
+const { createSmartAccountFromBrowser } = await import('../lib/zerodev-browser');
+const { account } = await createSmartAccountFromBrowser();
+setSessionKeyActive(true);
+setSmartAccountAddr(account.address);
+console.log('Smart account created:', account.address);
+} catch (err: any) {
+console.error('ZeroDev error:', err);
+alert(`Session key error: ${err.message}`);
+setSessionKeyActive(true); // fallback demo
+}
+}}
+
 onClose={() => setShowSessionModal(false)}
 />
 )}

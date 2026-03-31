@@ -1,13 +1,17 @@
 'use client';
 
+import { useState } from 'react';
 import { ConnectButton } from './components/ConnectButton';
 import { Dashboard } from './components/Dashboard';
 import { Simulate } from './components/Simulate';
 import { Ticker } from './components/Ticker';
+import GasCompare from './components/GasCompare';
+import McpTab from './components/McpTab';
 
 const container = { margin: '0 auto', maxWidth: '1280px', width: '100%' };
 
 export default function Home() {
+const [activeTab, setActiveTab] = useState<'home' | 'mcp'>('home');
 return (
 <main className="min-h-screen bg-[#0a0a0f] text-white w-full">
 
@@ -19,6 +23,20 @@ return (
 <span className="text-white text-sm font-black">A</span>
 </div>
 <h1 className="text-xl font-black tracking-widest text-white">ARX</h1>
+<div style={{ display: 'flex', gap: '4px', marginLeft: '16px' }}>
+<button
+onClick={() => setActiveTab('home')}
+style={{ padding: '4px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', border: activeTab === 'home' ? '1px solid #4f46e5' : '1px solid transparent', backgroundColor: activeTab === 'home' ? '#1e1b4b' : 'transparent', color: activeTab === 'home' ? '#818cf8' : '#6b7280' }}
+>
+Dashboard
+</button>
+<button
+onClick={() => setActiveTab('mcp')}
+style={{ padding: '4px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', border: activeTab === 'mcp' ? '1px solid #4f46e5' : '1px solid transparent', backgroundColor: activeTab === 'mcp' ? '#1e1b4b' : 'transparent', color: activeTab === 'mcp' ? '#818cf8' : '#6b7280' }}
+>
+MCP
+</button>
+</div>
 </div>
 <ConnectButton />
 </div>
@@ -70,8 +88,9 @@ Monitor any wallet, get AI-powered risk analysis, and protect your position with
 <Ticker />
 </div>
 </div>
+<GasCompare />
 
-{/* Body */}
+{activeTab === 'home' ? (
 <div style={{ margin: '0 auto', maxWidth: '1280px', width: '100%', paddingLeft: '24px', paddingRight: '24px', paddingTop: '40px', paddingBottom: '40px' }}>
 <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[600px]">
 <div style={{ paddingRight: '0', paddingTop: '16px', paddingBottom: '16px' }} className="lg:border-r lg:border-gray-800 lg:pr-12">
@@ -82,10 +101,13 @@ Monitor any wallet, get AI-powered risk analysis, and protect your position with
 </div>
 </div>
 </div>
+) : (
+<McpTab />
+)}
 
 {/* Footer */}
 <div style={{ borderTop: '1px solid #1f2937', marginTop: '16px' }}>
-<div style={{ ...container, paddingTop: '28px', paddingBottom: '28px', paddingLeft: '32px', paddingRight: '32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+<div style={{ ...container, paddingTop: '28px', paddingBottom: '28px', paddingLeft: '32px', paddingRight: '32px' }} className="flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
 <div style={{ width: '24px', height: '24px', borderRadius: '6px', backgroundColor: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 <span style={{ color: 'white', fontSize: '11px', fontWeight: 900 }}>A</span>
