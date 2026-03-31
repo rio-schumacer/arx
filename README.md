@@ -119,12 +119,10 @@ npm install --legacy-peer-deps
 
 Create .env.local:
 
-Bash
 NEXT_PUBLIC_ZERODEV_PROJECT_ID=your_project_id
 NEXT_PUBLIC_CHAIN_ID=5003
 GROQ_API_KEY=your_groq_api_key
 
-Bash
 npm run dev
 
 ───
